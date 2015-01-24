@@ -1,0 +1,8 @@
+Tiempo por insrucción del CPU:
+TIempo para escribir un dato(menor a 8 bytes):
+Tiempo para que la tarjeta de video realice un printf:
+Tiempo para escribir un bloque en el DD:
+Tiempo para escribir un bloque en la USB:
+
+En LINUX un bloque corresponde a 4KB y es la cantidad de información que se transfiere entre disco duro
+y RAM en cada operacion de LECTURA o ESCRITURA

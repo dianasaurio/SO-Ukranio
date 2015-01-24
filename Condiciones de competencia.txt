@@ -1,0 +1,3 @@
+Condiciones de competencia
+
+2 o más procesos acceden al mismo recurso al mismo tiempo
