@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	double inicio, fin;
 	double delta = 1.0 / n;
 	
-	pid_t pid;
+	
 	int j;
 	
 	printf("pi = %.16lff\n", acos(-1));

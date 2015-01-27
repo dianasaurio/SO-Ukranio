@@ -22,8 +22,13 @@ void main() {
     strings++;
   }*/
 
-    char s2[2] = "a";
-    char s1[8] = "holasss";
+   /* strcat example */
 
-    printf("%s\n",strstr(s1, s2));
+  char str[80];
+  strcpy (str,"these ");
+  strcat (str,"strings ");
+  strcat (str,"are ");
+  strcat (str,"concatenated.");
+  puts (str);
+  
 }
