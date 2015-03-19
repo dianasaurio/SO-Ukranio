@@ -33,7 +33,7 @@ int main(int arcg, char *argv[]){
 				printf("Variable = %d\n", *variable);
 				break;
 			case 'm':
-				printf("NUevlo valor de la variable en memoria compartida: \n");
+				printf("NUuevlo valor de la variable en memoria compartida: \n");
 				scanf("%d", variable);
 				break;
 			default:

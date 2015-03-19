@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
-char buffer [1];
+char buffer [4097];
 
 int main(int argc, char const *argv[])
 {

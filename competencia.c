@@ -3,10 +3,16 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
+
+#define SEMAFORO_PADRE 0
+#define SEMAFORO_HIJO 1
 
 int main(int arcg, char *argv[]){
-	int shmid, *variable;
+
+	int shmid, *variable, semid;
 	key_t llave;
+	struct sembuf operacion;
 
 	llave = ftok(argv[1], 'K'); // 1
 
@@ -21,6 +27,15 @@ int main(int arcg, char *argv[]){
 	}
 
 	*variable = 0;
+
+	if((semid = semget(llave, 2, IPC_CREAT | 0600)) == -1){
+		perror("Error al ejecutar smget");
+		exit(-1);
+	}
+
+	//inicializando semaforos
+	semctl(semid, SEMAFORO_PADRE, SETVAL, 0);
+	semctl(semid, SEMAFORO_HIJO, SETVAL, 1);
 	
 	int n = atoi(argv[2]), i;
 
@@ -33,23 +48,37 @@ int main(int arcg, char *argv[]){
 			perror("Error en el fork");
 			break;
 		case 0: /* proceso hijo */
-			//printf("Soy el hijo: PID %d; PPID = %d i = %d\n", getpid(), getppid(), ++i);
+
 			for(i = 0; i < n; i++){
-				//printf("%d\n", variable--);
-				(*variable)--;
-				//printf("%d, (hijo: %d, ppid(%d)) Variable = %d\n", i, getpid(), getppid(), *variable);
+				//hacemos down en el semaforo del hijo
+				operacion.sem_flg = 0;
+				operacion.sem_op = -1;
+				operacion.sem_num = SEMAFORO_HIJO;
+
+				semop(semid, &operacion, 1);
+				(*variable)++;
+				printf("\tSoy el hijo\n");
+				//hacemos up en el padre
+				operacion.sem_op = 1;
+				operacion.sem_num = SEMAFORO_HIJO;
+				semop(semid, &operacion, 1);
 			}
 			exit(0);
 			break;
 		default: /* proceso padre */
-			//printf("Soy el padre: PID %d; PPID = %d i = %d\n", getpid(), getppid(), --i);
-			for(i = 0; i < n; i++){
-				//printf("%d\n", variable++);
-				//*variable = *variable + 1;
-				(*variable)++;
-				//variable[0] = variable[0] + 1;
-				//printf("%d, (padre: %d, ppid(%d)) Variable = %d\n", i, getpid(), getppid(), *variable);
 
+			for(i = 0; i < n; i++){
+				//hacemos down en el padre
+				operacion.sem_flg = 0;
+				operacion.sem_op = -1;
+				operacion.sem_num = SEMAFORO_HIJO;
+				semop(semid, &operacion, 1);
+				(*variable)--;
+				printf("Soy el padre\n");
+				//hacemos up en el hijo
+				operacion.sem_op = 1;
+				operacion.sem_num = SEMAFORO_HIJO;
+				semop(semid, &operacion, 1);
 			}
 			wait(&estado);
 			printf("(dos) Variable = %d\n", *variable);
